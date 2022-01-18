@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        canvas {
+
+            width: 700px !important;
+            height: 500px !important;
+            /* aspect-ratio: 16/9; */
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="speedChart"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+
+    <script>
+        var speedCanvas = document.getElementById("speedChart");
+        // Chart.defaults.global.defaultFontFamily = "Lato";
+        // Chart.defaults.global.defaultFontSize = 18;
+
+        var dataFirst = {
+            label: "Tradinional Classifiers",
+            data: [68, 72, 70, 76],
+            lineTension: 0,
+            fill: false,
+            borderColor: 'red',
+        };
+
+        var dataSecond = {
+            label: "Bagging Classifiers",
+            data: [69.5, 72.5, 77.45, 78],
+            lineTension: 0,
+            fill: false,
+            borderColor: 'blue'
+        };
+
+        var speedData = {
+            labels: ["MLP", "KNN", "DT", "RF"],
+            datasets: [dataFirst, dataSecond]
+        };
+
+        var chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                },
+                title: {
+                    display: true,
+                    // text: 'Ensemble Test Model',
+                    text: 'Comparision Between Traditional and Bagging Classifiers',
+                },
+            },
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Classifiers'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Accuracy(%)'
+                    },
+                    min: 60,
+                    max: 80,
+                }
+            }
+        };
+
+        var lineChart = new Chart(speedCanvas, {
+            type: 'line',
+            data: speedData,
+            options: chartOptions
+        });
+    </script>
+</body>
+
+</html>
