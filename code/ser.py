@@ -1,3 +1,4 @@
+from math import gamma
 from sklearn.neural_network import MLPClassifier
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
@@ -54,6 +55,7 @@ modelmlp = MLPClassifier(**model_params)
 modelknn = KNeighborsClassifier(n_neighbors=1)
 modeltree = DecisionTreeClassifier(criterion = "gini")
 modelrf = RandomForestClassifier(n_estimators=110, random_state=1)
+modelsvm = SVC(kernel="linear",gamma='auto')
 modelvoting = VotingClassifier(estimators=[('MLP', modelmlp), ('KNN', modelknn), ('DT', modeltree) ,('RF', modelrf)], voting='hard')
 
 # train the model
@@ -62,6 +64,7 @@ modelmlp.fit(X_train, y_train)
 modelknn.fit(X_train, y_train)
 modeltree.fit(X_train, y_train)
 modelrf.fit(X_train, y_train)
+modelsvm.fit(X_train, y_train)
 modelvoting.fit(X_train, y_train)
 
 # predict 25% of data to measure how good we are (For Test data)
@@ -69,6 +72,7 @@ y_pred_mlp = modelmlp.predict(X_test)
 y_pred_knn = modelknn.predict(X_test)
 y_pred_tree = modeltree.predict(X_test)
 y_pred_rf = modelrf.predict(X_test)
+y_pred_svm = modelsvm.predict(X_test)
 y_preds_vote = modelvoting.predict(X_test)
 
 # For Train Data
@@ -76,6 +80,7 @@ y_pred_mlp_train = modelmlp.predict(X_train)
 y_pred_knn_train = modelknn.predict(X_train)
 y_pred_tree_train = modeltree.predict(X_train)
 y_pred_rf_train = modelrf.predict(X_train)
+y_pred_svm_train = modelsvm.predict(X_train)
 y_preds_vote_train = modelvoting.predict(X_train)
 
 
@@ -88,17 +93,30 @@ accuracy_mlp = modelmlp.score(X_test, y_test)
 accuracy_knn = modelknn.score(X_test, y_test)
 accuracy_tree = modeltree.score(X_test, y_test)
 accuracy_rf = modelrf.score(X_test, y_test)
+accuracy_svm = modelsvm.score(X_test, y_test)
 accurecy_vote = modelvoting.score(X_test,y_test)
 
 # print("Voting Score: ",accurecy_vote)
 
+# Traditional Classifier
 print("Accuracy of MLP: {:.2f}%".format(accuracy_mlp*100))
 print("Accuracy of KNN: {:.2f}%".format(accuracy_knn*100))
 print("Accuracy of DT: {:.2f}%".format(accuracy_tree*100))
 print("Accuracy of RF: {:.2f}%".format(accuracy_rf*100))
+print("Accuracy of SVM: {:.2f}%".format(accuracy_svm*100))
 averaged_accurecy = (accuracy_mlp + accuracy_knn + accuracy_tree + accuracy_rf)/4
 print("Average accurecy: {:.2f}%".format(averaged_accurecy*100))
 print("Accuracy of Voting: {:.2f}%".format(accurecy_vote*100))
+
+
+
+
+
+
+
+
+
+
 
 
 # Testing Rough
@@ -180,6 +198,15 @@ print("Accuracy of Voting: {:.2f}%".format(accurecy_vote*100))
 # # print('Boosting Model Accuracy:',clf.score(X_test, y_test))
 
 
+
+
+
+
+
+
+
+
+
 # ----Bagging Fiting---
 # X_train, X_test, y_train, y_test
 print('\n')
@@ -211,21 +238,57 @@ baggingMLP_test = bgMLP.score(X_test,y_test)*100
 baggingMLP_train = bgMLP.score(X_train,y_train)*100
 print(f'Bagging Test Model Accuracy: {baggingMLP_test}  Bagging Train Model Accuracy: {baggingMLP_train}')
 
+print('SVM Bagging: ')
+bgSVM = BaggingClassifier(SVC(kernel='linear',gamma='auto'), max_samples= 1.0, max_features = 180, n_estimators = 30)
+bgSVM.fit(X_train, y_train)
+baggingSVM_test = bgSVM.score(X_test,y_test)*100
+baggingSVM_train = bgSVM.score(X_train,y_train)*100
+print(f'Bagging Test Model Accuracy: {baggingSVM_test}  Bagging Train Model Accuracy: {baggingSVM_train}')
+
 print('Voting Bagging: ')
-baggingModelVoting = VotingClassifier(estimators=[('MLP', bgMLP), ('KNN', bgKNN), ('DT', bgDT) ,('RF', bgRF)], voting='hard')
+baggingModelVoting = VotingClassifier(estimators=[('MLP', bgMLP), ('KNN', bgKNN), ('DT', bgDT) ,('RF', bgRF),('SVM', bgSVM)], voting='hard')
 baggingModelVoting.fit(X_train,y_train)
 baggingModelVoting_test = baggingModelVoting.score(X_test,y_test)*100
 print(f'Bagging Test Model Accuracy: {baggingModelVoting_test}')
 
 
-if not os.path.isdir("result"):
-    os.mkdir("result")
 
-pickle.dump(bgDT, open("result/BaggingDT.model", "wb"))
-pickle.dump(bgRF, open("result/BaggingRF.model", "wb"))
-pickle.dump(bgKNN, open("result/BaggingKNN.model", "wb"))
-pickle.dump(bgMLP, open("result/BaggingMLP.model", "wb"))
-pickle.dump(baggingModelVoting, open("result/BaggingVoting.model", "wb"))
+
+
+
+# For Bagging testing emontion samples............
+print("DT Confution Matrix:")
+print(classification_report(y_test, bgDT.predict(X_test)))
+print("RF Confution Matrix:")
+print(classification_report(y_test, bgRF.predict(X_test)))
+print("KNN Confution Matrix:")
+print(classification_report(y_test, bgKNN.predict(X_test)))
+print("MLP Confution Matrix:")
+print(classification_report(y_test, bgMLP.predict(X_test)))
+print("SVM Confution Matrix:")
+print(classification_report(y_test, bgSVM.predict(X_test)))
+
+
+# For Bagging train emontion samples............
+print("DT Confution Matrix:")
+print(classification_report(y_train, bgDT.predict(X_train)))
+print("RF Confution Matrix:")
+print(classification_report(y_train, bgRF.predict(X_train)))
+print("KNN Confution Matrix:")
+print(classification_report(y_train, bgKNN.predict(X_train)))
+print("MLP Confution Matrix:")
+print(classification_report(y_train, bgMLP.predict(X_train)))
+print("SVM Confution Matrix:")
+print(classification_report(y_train, bgSVM.predict(X_train)))
+
+# if not os.path.isdir("result"):
+#     os.mkdir("result")
+
+# pickle.dump(bgDT, open("result/BaggingDT.model", "wb"))
+# pickle.dump(bgRF, open("result/BaggingRF.model", "wb"))
+# pickle.dump(bgKNN, open("result/BaggingKNN.model", "wb"))
+# pickle.dump(bgMLP, open("result/BaggingMLP.model", "wb"))
+# pickle.dump(baggingModelVoting, open("result/BaggingVoting.model", "wb"))
 
 
 

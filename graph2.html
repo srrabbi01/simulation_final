@@ -27,7 +27,6 @@
 </head>
 
 <body>
-
     <canvas id="speedChart"></canvas>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -39,51 +38,39 @@
         // Chart.defaults.global.defaultFontSize = 18;
 
         var dataFirst = {
-            // label: "Tradinional Classifiers",
-            data: [69.5, 72.5, 77.45, 78],
+            label: "Tradinional Classifiers",
+            data: [68, 71.25, 70, 76, 56],
             lineTension: 0,
-            fill: true,
-            // borderColor: 'red',
-            backgroundColor: ['#89c6ff', '#728FCE', '#659EC7', '#357EC7'],
+            fill: false,
+            borderColor: 'red',
         };
 
         var dataSecond = {
-            // label: "Tradinional Classifiers",
-            data: [94, 98, 98.64, 99.2],
+            label: "Bagging Classifiers",
+            data: [69.5, 73.5, 77.45, 78, 64.67],
             lineTension: 0,
-            fill: true,
-            // borderColor: 'red',
-            backgroundColor: ['#81D8D0', '#7BCCB5', '#92C7C7', '#40E0D0'],
-        };
-        var dataThird = {
-            // label: "Tradinional Classifiers",
-            data: [79.5, 78],
-            lineTension: 0,
-            fill: true,
-            // borderColor: 'red',
-            backgroundColor: ['#837E7C', '#C0C0C0'],
+            fill: false,
+            borderColor: 'blue'
         };
 
         var speedData = {
-            labels: ["MLP", "KNN", "DT", "RF"],
-            // labels: ["Ensemble Voting", "Traditional Voting"],
-            datasets: [dataSecond, ]
+            labels: ["MLP", "KNN", "DT", "RF", "SVM"],
+            datasets: [dataFirst, dataSecond]
         };
 
         var chartOptions = {
-            barPercentage: 0.4,
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
                 legend: {
-                    display: false,
+                    display: true,
                     position: 'top',
                     align: 'end',
                 },
                 title: {
                     display: true,
                     // text: 'Ensemble Test Model',
-                    text: 'Ensemble Train Model',
+                    text: 'Comparision Between Traditional and Bagging Classifiers',
                 },
             },
             scales: {
@@ -98,13 +85,14 @@
                         display: true,
                         text: 'Accuracy(%)'
                     },
+                    min: 20,
                     max: 100,
                 }
             }
         };
 
         var lineChart = new Chart(speedCanvas, {
-            type: 'bar',
+            type: 'line',
             data: speedData,
             options: chartOptions
         });
